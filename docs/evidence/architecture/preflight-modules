@@ -1,0 +1,108 @@
+// PreFlight · 模块/包关系图（现状，reverse-engineered）
+// 依据: com.preflight.{learn,repo,ai,exec,llm,parser,yapi,system} + resources/static
+// 证据: preflight/preflight-server/src/main/java/... ; Flyway V1-V22 ; docs/02-04.md
+digraph preflight_modules {
+  rankdir=LR;
+  fontname="Segoe UI";
+  labelloc=t;
+  label="PreFlight 半自动测试系统 · 模块关系（包 → 容器 → 组件）";
+  nodesep=0.35; ranksep=0.7; pad=0.4;
+
+  // ===== subgraphs by package/container =====
+  subgraph cluster_front {
+    label="前端 resources/static（原生 JS SPA）";
+    style=filled; color="#0f172a";
+    node [shape=box, fillcolor="#e2e8f0", fontcolor="#0f172a"];
+    indexHtml [label="index.html · 10 hash 路由\n项目/仓库/环境/学习/影响分析/用例/运行/检查单/结论单/设置"];
+    appJs   [label="app.js · 5129 行\n动态表单由 params_schema 渲染\ncURL 复制 / 用例目录树 / 断言编辑"];
+  }
+
+  subgraph cluster_api {
+    label="REST API 层（16 @RestController · /api/**）";
+    style=filled; color="#1e3a8a";
+    node [shape=box, fillcolor="#dbeafe", fontcolor="#1e3a8a"];
+    cProject [label="ProjectController\n/repos /environments /credentials /settings"];
+    cRepo    [label="RepoController\n/repo/** + JGit/SVNKit 客户端"];
+    cLearn   [label="LearnController\n/learn/** 学习 + LLM 提炼 + 确认"];
+    cImpact  [label="ImpactAnalysisController\n/impact-analysis/** 影响分析"];
+    cCase    [label="CaseController\n/cases/** 用例 + 断言 + 离线模板"];
+    cRun     [label="RunController\n/runs/** 双引擎执行 + KJDP 桩"];
+    cReport  [label="ReportController\n/release-checklist /report 检查单/结论单"];
+    cMock    [label="MockController · /mock/**\nKJDP 金证加解密桩 + YApi 回写"];
+    cAuth    [label="AuthController\nRBAC tester/admin/viewer + 审计"];
+  }
+
+  subgraph cluster_service {
+    label="服务层（Spring Service + SqliteTask 单线程池）";
+    style=filled; color="#7c2d12";
+    node [shape=box, fillcolor="#ffedd5", fontcolor="#7c2d12"];
+    sScan   [label="ScannerService\n语言适配 Java/MyBatis/SQL/JS/TS/Python/Go/PHP/C#"];
+    sExtract [label="LlmExtractionService\n相邻文件聚合 → 接口卡/SQL卡/摘要草稿"];
+    sImpact [label="ImpactAnalysisService\nfile_bindings 查表 + 影响面派生"];
+    sExec   [label="TestRunnerService\nHTTP 执行器 + DB 直测执行器 + 断言引擎"];
+    sLlm    [label="LlmGatewayService\n按 purpose 路由 + 指纹缓存 + 离线降级"];
+    sKjdp   [label="KjdpStubService\nka/des.js 加解密本地桩 + YApi 回写"];
+    sReport [label="ReleaseChecklistService\n检查单 + 提测结论单落库"];
+  }
+
+  subgraph cluster_parsing {
+    label="静态解析器（com.preflight.parser）";
+    style=filled; color="#5b21b6";
+    node [shape=box, fillcolor="#ede9fe", fontcolor="#5b21b6"];
+    pJava [label="JavaParser\nController/Mapper 抽取"];
+    pSql  [label="JSqlParser\n表/过程/存储过程"];
+  }
+
+  subgraph cluster_data {
+    label="知识库存储（元库 + 文件）";
+    style=filled; color="#14532d";
+    node [shape=cylinder, fillcolor="#dcfce7", fontcolor="#14532d"];
+    dbMeta [label="SQLite preflight.db\nFlyway V1-V22 · 22 表"];
+    fCache [label="文件缓存\nllm_cache / knowledge_files / 本地索引"];
+  }
+
+  subgraph cluster_external {
+    label="外部系统（out-of-process）";
+    style=filled; color="#475569";
+    node [shape=ellipse, fillcolor="#f8fafc", fontcolor="#334155", style="dashed,filled"];
+    xVcs   [label="VCS（Git/SVN 仓库）"];
+    xDb    [label="被测数据库（信创六库）"];
+    xSvc   [label="被测服务（HTTP）"];
+    xLlm   [label="LLM（云端/Ollama）"];
+  }
+
+  // ===== 调用 / 数据流 =====
+  indexHtml -> appJs [label="渲染 / 调 REST"];
+  appJs -> cProject [label="REST /api/**", color="#1e3a8a"];
+  appJs -> cLearn    [label="学习", color="#7c2d12"];
+  appJs -> cImpact   [label="影响分析", color="#7c2d12"];
+  appJs -> cCase     [label="用例", color="#7c2d12"];
+  appJs -> cRun      [label="执行", color="#7c2d12"];
+  appJs -> cReport   [label="检查单/结论单", color="#1e3a8a"];
+  appJs -> cMock     [label="KJDP 桩", color="#7c2d12"];
+  appJs -> cAuth     [label="鉴权", color="#1e3a8a"];
+
+  cRepo -> sScan    [label="拉取+扫描", color="#7c2d12"];
+  cLearn -> sExtract [label="LLM 提炼", color="#7c2d12"];
+  cImpact -> sImpact [label="查表", color="#7c2d12"];
+  cCase -> sExec    [label="跑用例", color="#7c2d12"];
+  cRun -> sExec     [label="双引擎", color="#7c2d12"];
+  cRun -> sKjdp     [label="金证登录桩", color="#7c2d12"];
+  cReport -> sReport [label="检查单/结论单", color="#7c2d12"];
+  cMock -> sKjdp    [label="回写/桩", color="#7c2d12"];
+
+  sScan -> pJava    [label="抽 Java", color="#5b21b6"];
+  sScan -> pSql     [label="抽 SQL", color="#5b21b6"];
+  sExtract -> sLlm  [label="提炼摘要", color="#7c2d12"];
+  sLlm -> xLlm      [label="OpenAI 兼容", color="#475569"];
+  sExec -> xDb      [label="JDBC 直测（回滚）", color="#475569"];
+  sExec -> xSvc     [label="HTTP 远程", color="#475569"];
+  sKjdp -> sLlm     [label="KJDP 登录加密", color="#7c2d12"];
+  sReport -> dbMeta [label="检查单/结论单", color="#14532d"];
+  sImpact -> dbMeta [label="影响面", color="#14532d"];
+  sScan -> dbMeta   [label="中间产物", color="#14532d"];
+  sExtract -> dbMeta [label="草稿/摘要", color="#14532d"];
+  sExtract -> fCache [label="llm_cache", color="#14532d"];
+  cRepo -> xVcs     [label="JGit/SVNKit", color="#475569"];
+  cAuth -> dbMeta   [label="RBAC/审计", color="#14532d"];
+}

@@ -1,0 +1,19 @@
+# 构建产物
+src/preflight-server/target/
+dev/lib/
+
+# 运行期数据与日志（含凭据密文、主密钥 master.key，绝不入库）
+data/
+logs/
+preflight.pid
+
+# 本地工具链与工具过程件（体积大、可自取，不属于源码）
+tools/
+archive/
+.scan/
+.tmp/
+
+# IDE
+.idea/
+*.iml
+.vscode/

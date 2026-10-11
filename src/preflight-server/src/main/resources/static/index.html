@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PreFlight · 半自动测试系统</title>
+<link rel="stylesheet" href="app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛫</text></svg>">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">PF</div>
+      <div>
+        <div class="brand-name">PreFlight</div>
+        <div class="brand-sub">半自动测试系统</div>
+      </div>
+    </div>
+    <nav id="nav">
+      <a href="#/dashboard" data-view="dashboard">📈 看板</a>
+      <a href="#/projects" data-view="projects">🗂 项目与仓库</a>
+      <a href="#/changes" data-view="changes">🔥 改动流</a>
+      <a href="#/lab" data-view="lab">🧪 接口测试台</a>
+      <a href="#/sql" data-view="sql">🗄 SQL 直测</a>
+      <a href="#/knowledge" data-view="knowledge">📚 知识库</a>
+      <a href="#/yapi" data-view="yapi">📤 YApi 文档</a>
+      <a href="#/releases" data-view="releases">🛫 起飞检查单</a>
+      <a href="#/reports" data-view="reports">📑 提测结论单</a>
+      <a href="#/settings" data-view="settings">⚙ 系统设置</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div id="llmStatus" class="llm-status">LLM 检测中…</div>
+      <div>Java 21 单体 · 无需 Docker</div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <input id="globalSearch" class="search" placeholder="全局搜索：接口 / SQL / 用例…（回车）">
+      <div class="topbar-right">
+        <span id="pageTitle" class="page-title">看板</span>
+      </div>
+    </header>
+    <div id="view" class="view">加载中…</div>
+  </main>
+</div>
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+<script src="app.js"></script>
+</body>
+</html>

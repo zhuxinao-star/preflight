@@ -1,0 +1,79 @@
+// PreFlight · 变更驱动数据流图（现状，reverse-engineered）
+// 证据: docs/02.md·4.1 / docs/03.md·4.2 / exec/{Http*,DbTest*}.java
+// L4 断言复用 dbEx；dbEx 默认回滚（INSERT/UPDATE/DELETE）；DDL 受六库闸门控制
+digraph preflight_dataflow {
+  rankdir=TB;
+  fontname="Segoe UI";
+  label="PreFlight · 变更驱动数据流（L4 断言 / 六库 DDL 闸门 / 离线降级）";
+  nodesep=0.35; ranksep=0.6; pad=0.4;
+
+  subgraph cluster_vcs {
+    label="VCS 变更输入";
+    style=filled; color="#1e3a8a";
+    node [shape=box, fillcolor="#dbeafe"];
+    vcsCommit [label="git diff / svn diff\n（五分类 + 影响面派生）"];
+    vcsFile   [label="改动文件列表\n前端/后端/SQL/DDL/配置"];
+  }
+
+  subgraph cluster_learn {
+    label="学习与影响分析";
+    style=filled; color="#7c2d12";
+    node [shape=box, fillcolor="#ffedd5"];
+    scan    [label="扫描器\n语言适配 Java/MyBatis/SQL"];
+    kb      [label="已确认知识包\nextracted_unit / extracted_table"];
+    impact  [label="影响分析\nfile→unit→接口/表"];
+    genCase [label="用例生成\nL1-L4 草稿 · 离线模板兜底"];
+  }
+
+  subgraph cluster_assert {
+    label="断言引擎（L1-L4）";
+    style=filled; color="#5b21b6";
+    node [shape=box, fillcolor="#ede9fe"];
+    assert [label="断言评估\n状态码/JSONPath/基线/Diff"];
+    recalc [label="基准缓存\nbaseline/*.json · 重新评估 L1-L4"];
+  }
+
+  subgraph cluster_exec {
+    label="执行器（双引擎）";
+    style=filled; color="#0f766e";
+    node [shape=box, fillcolor="#ccfbf1"];
+    httpEx [label="HTTP 执行器\n骨架回填 · 会话缓存(TTL 25min)\n401 重登 · cURL 导出"];
+    dbEx   [label="DB 直测执行器\nPreparedStatement 绑定\n默认回滚 · 黑名单/行数上限\n六库 DDL 闸门"];
+  }
+
+  subgraph cluster_llm {
+    label="LLM 网关";
+    style=filled; color="#44403c";
+    node [shape=box, fillcolor="#f5f5f4"];
+    llmGw  [label="网关\npurpose 路由 · 指纹缓存"];
+    llmOff [label="离线兜底\nLLM 不可用时的降级"];
+  }
+
+  subgraph cluster_ext {
+    label="外部系统（out-of-process）";
+    style=filled; color="#475569";
+    node [shape=ellipse, fillcolor="#f8fafc", style="dashed,filled"];
+    xDb    [label="被测数据库\n信创六库：DM8/Gauss/MySQL/\nOracle/TiDB/SQLServer"];
+    xSvc   [label="被测服务\nHTTP 接口"];
+    xLlm   [label="LLM 供应商\n云端 / 内网 Ollama"];
+    xDbSchema [label="六库 DDL 差异\nDDL 闸门（白名单+厂商语法）"];
+  }
+
+  vcsCommit -> vcsFile [label="diff 输出"];
+  vcsFile -> scan [label="文件→语言适配"];
+  scan -> kb [label="写入知识包"];
+  kb -> impact [label="文件↔实体映射"];
+  impact -> genCase [label="受影响接口/表 → 用例"];
+  genCase -> assert [label="挂 L1-L4 断言"];
+  assert -> httpEx [label="L1-L3 走 HTTP"];
+  assert -> dbEx   [label="L4 回读走 DB"];
+  httpEx -> xSvc  [label="HTTP 远程测"];
+  dbEx  -> xDb   [label="JDBC 直测"];
+  dbEx  -> xDbSchema [label="DDL 闸门"];
+  assert -> recalc [label="基准缓存 → 重评"];
+  genCase -> llmGw [label="LLM 提炼/生成"];
+  llmGw -> xLlm   [label="OpenAI 兼容"];
+  llmGw -> llmOff [label="离线降级"];
+  vcsCommit -.-> genCase [label="（变更触发）", style=dashed, color="#475569"];
+  kb -.-> scan [label="已知知识加速", style=dashed, color="#5b21b6"];
+}

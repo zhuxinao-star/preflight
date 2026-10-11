@@ -1,0 +1,284 @@
+:root {
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --sidebar: #101a2e;
+  --sidebar-hover: #1b2a47;
+  --text: #1e293b;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --accent: #4f46e5;
+  --accent-weak: #eef2ff;
+  --green: #059669;
+  --green-bg: #ecfdf5;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --blue-bg: #eff6ff;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, .06), 0 4px 16px rgba(15, 23, 42, .06);
+  font-size: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+.layout { display: flex; min-height: 100vh; }
+
+/* ---------- 侧边栏 ---------- */
+.sidebar { width: 220px; background: var(--sidebar); color: #cbd5e1; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+.brand { display: flex; gap: 10px; align-items: center; padding: 20px 16px 18px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.brand-logo { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 15px; }
+.brand-name { color: #fff; font-weight: 700; font-size: 16px; letter-spacing: .5px; }
+.brand-sub { font-size: 11px; color: #7c8db0; margin-top: 2px; }
+nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+nav a { color: #aab8d0; text-decoration: none; padding: 10px 12px; border-radius: 8px; font-size: 14px; transition: all .15s; }
+nav a:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+nav a.active { background: var(--accent); color: #fff; font-weight: 600; }
+.sidebar-foot { padding: 14px 16px; font-size: 11px; color: #64748b; border-top: 1px solid rgba(255,255,255,.08); }
+.llm-status { font-size: 12px; padding: 6px 8px; border-radius: 6px; margin-bottom: 8px; background: rgba(255,255,255,.06); }
+.llm-status.ok { color: #6ee7b7; }
+.llm-status.off { color: #fca5a5; }
+
+/* ---------- 主区 ---------- */
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: var(--card); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 10; }
+.search { width: 380px; max-width: 45vw; padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 13px; background: #f8fafc; }
+.search:focus { outline: none; border-color: var(--accent); background: #fff; }
+.page-title { color: var(--muted); font-size: 13px; }
+.view { padding: 24px 28px; }
+
+/* ---------- 卡片与布局 ---------- */
+.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 16px; }
+.card h3 { font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.grid { display: grid; gap: 14px; }
+.grid.cols4 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.grid.cols2 { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+.stat { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; }
+.stat .num { font-size: 26px; font-weight: 700; color: var(--accent); }
+.stat .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.stat.green .num { color: var(--green); } .stat.red .num { color: var(--red); }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.spread { justify-content: space-between; }
+/* 列表页顶部过滤条：每个条件都是「说明在上、控件在下」的一列，整条按标签顶边对齐。
+   第 35 轮：原先按底边对齐（flex-end），同一条里下拉 44px、输入框 40px、状态徽章 21px、
+   带小字说明的那组又多一行，顶边差到 20px 以上——用户看到的「错位」就是这个。
+   现在标签恒为一行、条内可点控件统一 40px（见下方 .fbar 段），小字说明挂在控件下方不再把控件顶高。 */
+.fbar { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.fgrp { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.fgrp > label { margin: 0; font-size: 11px; color: var(--muted); line-height: 1.4; white-space: nowrap; }
+.fgrp .row { align-items: center; }
+.muted { color: var(--muted); font-size: 12px; }
+.mt { margin-top: 12px; } .mb { margin-bottom: 12px; }
+
+/* ---------- 表格 ---------- */
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 10px; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: top; }
+tr:hover td { background: #f8fafc; }
+td.wrap { word-break: break-all; }
+/* 表内链接（用例目录的目标名等）：和按钮同一套主色，只在悬停时出下划线 */
+td a, .card a:not(.btnlike) { color: var(--accent); text-decoration: none; font-weight: 600; }
+td a:hover, .card a:not(.btnlike):hover { text-decoration: underline; filter: none; box-shadow: none; }
+
+/* ---------- 徽标 ---------- */
+.badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.b-green { background: var(--green-bg); color: var(--green); }
+.b-red { background: var(--red-bg); color: var(--red); }
+.b-amber { background: var(--amber-bg); color: var(--amber); }
+.b-blue { background: var(--blue-bg); color: #2563eb; }
+.b-gray { background: #f1f5f9; color: var(--muted); }
+.b-indigo { background: var(--accent-weak); color: var(--accent); }
+
+/* ---------- 可点击控件（第 18 轮：按钮/链接/翻页条同一套尺寸与动效） ----------
+   尺寸只有两档：常规 40px、行内 small 28px；button 与 a.btnlike 共用，
+   所以「翻页条和按钮长得不一样」这类问题不会再出现。颜色仍按语义分。 */
+button, a.btnlike { border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer;
+  background: var(--accent); color: #fff; text-decoration: none; line-height: 1.35;
+  transition: filter .12s, background .12s, box-shadow .12s, transform .06s; }
+a.btnlike { display: inline-block; }
+button:hover, a.btnlike:hover { filter: brightness(1.08); box-shadow: 0 2px 8px rgba(15,23,42,.16); }
+button:active:not(:disabled), a.btnlike:active { transform: translateY(1px) scale(.985); box-shadow: none; filter: brightness(.94); }
+button:focus-visible, a.btnlike:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
+button:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+button.ghost, a.btnlike { background: #f1f5f9; color: var(--text); }
+button.ghost:hover, a.btnlike:hover { background: #e2e8f0; }
+button.danger { background: var(--red-bg); color: var(--red); }
+button.small, a.btnlike { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+/* 点了必然有反馈：请求在飞时按钮转圈并禁用，回来按结果绿/红闪一下（app.js 的在飞计数负责挂类名） */
+@keyframes pf-spin { to { transform: rotate(360deg); } }
+button.pf-busy { position: relative; cursor: progress; }
+/* 第 20 轮：长任务要把进度写在按钮上（"生成用例 · 3/12 · 正在处理 xxx.xml"），
+   所以只有"没在显示进度文字"时才把文案藏起来只留转圈。 */
+button.pf-busy:not(.pf-prog-on) { color: transparent !important; }
+button.pf-busy.pf-prog-on { padding-left: 28px; }
+button.pf-busy.pf-prog-on::after { left: 13px; }
+button.pf-busy::after { content: ""; position: absolute; left: 50%; top: 50%; width: 13px; height: 13px;
+  margin: -7px 0 0 -7px; border: 2px solid rgba(255,255,255,.45); border-top-color: #fff; border-radius: 50%;
+  animation: pf-spin .7s linear infinite; }
+button.pf-busy.ghost::after, button.pf-busy.danger::after { border-color: rgba(30,41,59,.25); border-top-color: var(--text); }
+/* 按钮上的进度文字：跟着按钮自己的文字色（深底浅底都读得清），过长截断免得撑坏表格列宽 */
+.pf-prog { display: inline-block; max-width: 250px; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; vertical-align: bottom; opacity: .85; animation: pf-breathe 1.6s ease-in-out infinite; }
+@keyframes pf-breathe { 0%,100% { opacity: .55; } 50% { opacity: .95; } }
+@keyframes pf-flash { 0%,100% { box-shadow: none; } 35% { box-shadow: 0 0 0 3px var(--flash-c); } }
+button.pf-ok, a.btnlike.pf-ok { --flash-c: rgba(5,150,105,.55); animation: pf-flash .7s; }
+button.pf-bad, a.btnlike.pf-bad { --flash-c: rgba(220,38,38,.6); animation: pf-flash .7s; }
+/* 顶部在飞进度条：请求跨过整页刷新（route() 会重建 DOM、按钮随之消失）时，唯一还留在屏上的反馈 */
+#pfTop { position: fixed; left: 0; top: 0; height: 3px; width: 0; z-index: 400; opacity: 0;
+  background: linear-gradient(90deg, #6366f1, #06b6d4); transition: width .25s, opacity .2s; }
+#pfTop.on { opacity: 1; width: 85%; }
+select, input, textarea { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: var(--text); }
+select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+/* 同一行的控件/按钮高齐：输入框与按钮 40px 起，下拉框再大一档 44px */
+input:not([type=checkbox]):not([type=radio]), button:not(.small) { min-height: 40px; }
+/* 多行框：默认铺满所在卡片（不写 width 时浏览器按 cols=20 只给 ~166px，这就是「框太窄」的真因），
+   右下角可双向拖动（resize: both）；起始高度只由这里的 min-height 决定，
+   JS 的 fitTextarea 按内容在 [min-height, 900px] 之间长高，用户手动拖过高度后 JS 不再抢回去 */
+textarea { width: 100%; resize: both; min-height: 200px; overflow: auto; }
+textarea.code { font-family: Consolas, monospace; font-size: 13px; background: #0f172a; color: #7ee787; min-height: 360px; }
+/* 下拉框：加大号 + 内容自适应宽度（fitSelect 按最长选项设 min-width，见 app.js） */
+select { min-height: 44px; padding: 11px 12px; font-size: 14px; max-width: 100%; }
+/* 动态 SQL 片段表：列宽固定 + 单元格省略号，避免一行被撑到几百像素高；
+   容器窄于 min-width 时整表横向滚动，而不是把每列压到几像素、一个字一行 */
+.tbl-scroll { overflow-x: auto; max-width: 100%; }
+table.dyn { table-layout: fixed; width: 100%; min-width: 780px; }
+table.dyn td { vertical-align: top; }
+.ell { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+label.f { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
+/* 过滤条内的控件统一按「常规 40px」这一档走（下拉原本 44px、行内按钮 28px、状态徽章 ~21px，
+   混在一条里就是高低不齐）；标签的额外上下边距也在这里收掉，让四组的标签落在同一行。
+   写在 label.f 之后：两条同为 (0,1,1)，后写的才算数。 */
+/* 只给「字段标签」锁一行；控件下方挂的小字说明（label.muted）允许换行，
+   否则它会按内容撑到 300px 宽，把整条过滤条挤到第二行（第 35 轮实测踩到） */
+.fgrp > label { margin: 0; }
+.fgrp > label.f { white-space: nowrap; }
+.fbar select { min-height: 40px; padding: 9px 10px; font-size: 13px; }
+.fbar button, .fbar a.btnlike, .fbar a.badge { min-height: 40px; padding: 0 14px; font-size: 13px;
+  display: inline-flex; align-items: center; }
+.fbar a.badge { border: 1px solid var(--line); }
+
+/* ---------- 模态框 ---------- */
+.modal-mask { position: fixed; inset: 0; background: rgba(15, 23, 42, .45); display: flex; align-items: flex-start; justify-content: center; z-index: 100; padding: 6vh 16px; }
+.modal { background: #fff; border-radius: 14px; width: 640px; max-width: 96vw; max-height: 86vh; overflow: auto; padding: 22px 24px; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+.modal h3 { margin-bottom: 14px; }
+.modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+/* ---------- Toast ---------- */
+#toastRoot { position: fixed; top: 18px; right: 18px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; box-shadow: var(--shadow); animation: fadein .2s; }
+.toast.err { background: #7f1d1d; }
+@keyframes fadein { from { opacity: 0; transform: translateY(-6px); } }
+
+/* ---------- 其它 ---------- */
+.empty { text-align: center; color: var(--muted); padding: 40px 0; font-size: 13px; }
+pre.json { background: #0f172a; color: #7ee787; padding: 14px; border-radius: 10px; font-size: 12px; overflow: auto; max-height: 320px; white-space: pre-wrap; word-break: break-all; }
+pre.diff { background: #0f172a; color: #c9d1d9; padding: 14px; border-radius: 10px; font-size: 12px; overflow: auto; max-height: 380px; }
+.form-item { margin-bottom: 12px; position: relative; }
+.form-item label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.form-item input, .form-item select, .form-item textarea { width: 100%; }
+.pill-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.pill-tabs button { background: #f1f5f9; color: var(--text); border-radius: 999px; padding: 6px 16px; }
+.pill-tabs button.active { background: var(--accent); color: #fff; }
+.result-ok { border-left: 4px solid var(--green); }
+.result-fail { border-left: 4px solid var(--red); }
+
+/* ---------- diff 高亮（第 18 轮：改动内容要一眼看见，不再是一片同色文本） ---------- */
+pre.diff { line-height: 1.55; white-space: pre; }
+pre.diff .ln { display: block; padding: 0 6px; border-left: 3px solid transparent; }
+pre.diff .ln.add { background: #0a2f18; border-left-color: var(--green); }
+pre.diff .ln.del { background: #3a1418; border-left-color: var(--red); }
+pre.diff .ln.hunk { background: #0b2a4a; border-left-color: #38bdf8; color: #7dd3fc; font-weight: 600; }
+pre.diff .ln.file { color: #c4b5fd; font-weight: 600; }
+pre.diff .ln.meta { color: #64748b; font-style: italic; }
+/* 词级：一条删除行紧跟一条新增行时，把真正变了的那几个字单独标出来 */
+pre.diff .w-add { background: #15803d; color: #fff; border-radius: 3px; padding: 0 2px; }
+pre.diff .w-del { background: #b91c1c; color: #fff; border-radius: 3px; padding: 0 2px; }
+.diff-legend { display: flex; gap: 12px; align-items: center; font-size: 12px; color: var(--muted); margin: 6px 0 2px; }
+.diff-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+
+/* ---------- 第卅七轮：改动快照区（上下文换档）+ 改动文件全文（标改动） ---------- */
+.patchbox { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; background: #f8fafc; }
+.pbbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+.pbbar .lbl { font-size: 12px; color: var(--muted); }
+/* 行内小下拉不参与"按最长选项加宽"（fitSelect 会把它撑成 320px，整条工具栏错位） */
+.pbbar select { width: 108px; min-width: 108px; min-height: 30px; height: 30px; font-size: 12px; padding: 3px 8px; }
+.pbbar button { min-height: 30px; }
+.fileview { background: #0f172a; color: #c9d1d9; border-radius: 10px; padding: 10px 0;
+  font-family: ui-monospace, Consolas, monospace; font-size: 12px; line-height: 1.55;
+  max-height: 62vh; min-height: 220px; overflow: auto; resize: both; }
+.fileview .ln { display: flex; gap: 10px; padding: 0 12px; white-space: pre; }
+.fileview .ln .no { color: #64748b; min-width: 52px; text-align: right; user-select: none; flex: none; }
+.fileview .ln .tx { flex: 1; }
+.fileview .ln.hit { background: #0a2f18; box-shadow: inset 3px 0 0 var(--green); }
+.fileview .ln.hit .no { color: #6ee7b7; font-weight: 600; }
+.fileview .ln.flash { outline: 2px solid #fbbf24; outline-offset: -2px; }
+.fileview .fv-gap button { background: #1e293b; color: #94a3b8; border: 1px solid #334155; width: 100%;
+  text-align: left; font-size: 11px; padding: 3px 12px; border-radius: 0; }
+.fileview .fv-gap button:hover { background: #273548; }
+.fvbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+.fvbar .muted { margin-right: 4px; }
+.fvbar button { min-height: 30px; }
+.fvbar button.on { background: var(--accent); color: #fff; }
+.fv-legend { display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--muted); margin: 2px 0 6px; }
+.fv-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+
+/* ---------- 悬停说明（第 18 轮：菜单与按钮各一个开关，见系统设置→界面提示） ---------- */
+#pfTip { position: fixed; z-index: 500; max-width: 360px; background: #0f172a; color: #e2e8f0;
+  border: 1px solid #334155; border-radius: 9px; padding: 8px 11px; font-size: 12px; line-height: 1.6;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .12s; }
+#pfTip.on { opacity: 1; }
+#pfTip b { color: #a5b4fc; display: block; margin-bottom: 2px; }
+nav a { position: relative; }
+
+/* ---------- 翻页条（第 18 轮统一：每页条数可选，最多 200） ---------- */
+.pager { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+/* 行内小下拉（设置页的「列表默认每页」）：不参与按最长选项加宽，保持紧凑。
+   写在 .pager select 之前，翻页条里的同名控件仍按 28px 小尺寸走。 */
+select.jump { width: 76px; min-width: 76px; min-height: 34px; height: 34px; padding: 4px 8px; }
+.pager select, .pager input:not([type=checkbox]) { min-height: 28px; height: 28px; padding: 3px 8px; font-size: 12px; }
+/* 同一条翻页带里按钮/链接也拉到 28px，否则下拉 28 + 按钮 24 会看出两种高度 */
+.pager button, .pager a.btnlike { min-height: 28px; }
+.pager .jump { width: 64px; }
+.pager .muted { font-size: 12px; }
+
+/* ---------- ③ 面板候选条（第 27 轮按学到的事实给可选值；第 30 轮收进"聚焦才出的下拉"） ----------
+   恒显的只剩两样：▾ 候选 N 项 这个入口，和"没查到"的理由（.cand-warn）；长说明改成悬停字段名看、点一下常驻。 */
+.cand-line { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.cand-count { font-size: 11px; }
+.cand-pop { position: absolute; left: 0; right: 0; z-index: 300; margin-top: 2px; padding: 8px;
+  background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow);
+  min-width: 220px; max-height: 240px; overflow: auto; resize: both; }
+.cand-pop[hidden] { display: none; }
+.cand-pop-h { font-size: 11px; color: var(--muted); line-height: 1.5; word-break: break-all;
+  padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px dashed var(--line); }
+.cand-bar { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.cand-chip { min-height: 24px; height: auto; padding: 2px 8px; font-size: 12px; line-height: 1.4;
+  border: 1px solid var(--line); border-radius: 999px; background: #f8fafc; color: var(--text);
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cand-chip i { font-style: normal; color: var(--muted); margin-left: 4px; }
+.cand-chip:hover { border-color: #2563eb; background: var(--blue-bg); }
+.cand-chip.on { border-color: #2563eb; background: var(--blue-bg); color: #2563eb; font-weight: 600; }
+.cand-src { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+.cand-warn { color: var(--amber); background: var(--amber-bg); border-radius: 6px; padding: 2px 6px; }
+
+/* ---------- 第 30 轮：③ 面板参数说明收进字段名（悬停看全文，点一下常驻） ---------- */
+.fn-lab { cursor: help; user-select: none; }
+.fn-lab:hover { color: var(--text); }
+.fn-mark { font-style: normal; color: var(--accent); margin-left: 2px; }
+.fn-note { font-size: 11px; line-height: 1.55; margin-top: 3px; word-break: break-all;
+  background: var(--accent-weak); border-radius: 8px; padding: 4px 6px; }
+.fn-note[hidden] { display: none; }
+
+/* ---------- 第 38 轮：YApi 文档维护弹屏（行内编辑一张字段表） ---------- */
+/* 一份文档常有几十行、六列，640px 的默认弹屏会把列挤成一团，所以这一页单独放宽 */
+.modal.wide { width: 1180px; }
+/* 行内编辑的表：单元格里的输入框要小一号才排得下，但宽度按"看得清整段中文说明"给，不用滚动条也能读 */
+table.doc-tb { font-size: 12px; }
+table.doc-tb td { padding: 4px 6px; vertical-align: middle; }
+table.doc-tb input { min-height: 36px; padding: 4px 8px; font-size: 13px; }
+table.doc-tb input:focus { border-color: var(--accent); background: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001s !important; transition-duration: .001s !important; }
+}
