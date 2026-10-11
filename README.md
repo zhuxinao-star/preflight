@@ -10,7 +10,7 @@ D:\project test\
 ├── dev\         部署目录，不含源码：dev\bin\ 启停构建脚本 + dev\lib\ jar 与外部 JDBC 驱动
 ├── data\        运行数据：preflight.db(+wal/shm) + master.key + artifacts\ + backups\
 ├── logs\        日志：preflight.log（logback 滚动）+ stdout.log（控制台合并）+ archive\
-├── tools\       构建工具链：JDK 21 + Maven 3.9.11 + m2-repo\（本地依赖仓，离线可重编）
+├── tools\       构建工具链：JDK 21 + Maven 3.9.11 + m2-repo\（本地依赖仓，离线可重编；体积大，不随仓库发布）
 ├── archive\     与本项目运行无关的遗留：外部工具会话状态、一把旧 master.key、2026-09-19 的旧编译类
 └── README.md    本文件
 ```
@@ -30,7 +30,9 @@ Linux 部署机用 `dev\bin\start.sh` / `stop.sh` / `status.sh`（同一套目�
 
 ## 用 IntelliJ IDEA 开发
 
-直接 **Open** `src\preflight-server\pom.xml`（Maven 项目导入，源码根、`src/main/java`、`src/main/resources` 布局都是标准 Maven 的）。JDK 选 `tools\jdk-21.0.12.1+1`，Maven 指向 `tools\apache-maven-3.9.11`，settings 用 `config\maven-settings.xml`，本地仓库 `tools\m2-repo`——**别用 IDEA 自带的 Maven 默认 `~/.m2`**，那会绕过本工作区的离线依赖仓。
+直接 **Open** `src\preflight-server\pom.xml`（Maven 项目导入，源码根、`src/main/java`、`src/main/resources` 布局都是标准 Maven 的）。settings 用 `config\maven-settings.xml`（只配了中央仓镜像）。本机 JDK 选 `tools\jdk-21.0.12.1+1`、Maven 指向 `tools\apache-maven-3.9.11`、本地仓库 `tools\m2-repo`——**别用 IDEA 自带的 Maven 默认 `~/.m2`**，那会绕过本工作区的离线依赖仓。
+
+**克隆下来而没有 `tools\` 时**：该目录体积大、不随仓库发布。`build.bat` 会自动回落到 PATH 上的 `java` / `mvn` 与默认 `~/.m2`（首次构建需联网下依赖）；有 `tools\` 时仍优先用它，本机行为不变。`start.bat` 的 java 次序是 `dev\jre\bin\java.exe` → `tools\jdk-*` → PATH 上的 `java`。
 
 ## 三条容易被忽略的约定
 
