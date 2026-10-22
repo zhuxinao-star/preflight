@@ -18,9 +18,9 @@ D:\project test\
 ## 启停与构建（Windows）
 
 ```bat
-dev\bin\start.bat                 :: 启动，浏览器打开 http://localhost:8320（后台运行，不留窗口）
-dev\bin\status.bat                :: 进程 + /actuator/health
-dev\bin\stop.bat                  :: 停止
+dev\bin\start.bat                 :: 启动，浏览器打开 http://localhost:8320（后台运行，不留窗口；打印 [OK] 的判据是端口真在监听）
+dev\bin\status.bat                :: 端口属主 PID + 镜像名 + /actuator/health
+dev\bin\stop.bat                  :: 停止（只杀 8320 上那个 java.exe）
 dev\bin\build.bat package         :: 构建并把 jar 拷进 dev\lib\preflight-server.jar（本仓当前没有 src\test，所以不跑测试）
 ```
 
@@ -38,4 +38,5 @@ Linux 部署机用 `dev\bin\start.sh` / `stop.sh` / `status.sh`（同一套目�
 
 - **`data\` 和 `logs\` 必须留在工作区根**：`application.yml` 里写的是相对路径（`jdbc:sqlite:data/preflight.db`、`logging.file.name=logs/preflight.log`），相对的是**进程的当前工作目录**，`start.bat` 因此在拉起 java 前 `cd` 到工作区根。把这两个目录挪进 `dev\` 而不改脚本，服务会在原地新建一个空库。
 - **配置的唯一真源在 jar 里**：`src\preflight-server\src\main\resources\application.yml`。`config\` 不放它的副本，避免两份事实（副本改了不生效，比没副本更坏）。
-- **停服认进程靠 `preflight-server` 这个串**：`stop.bat`/`status.bat` 按 java 命令行里是否含它匹配，所以 jar 名不要改。
+- **Windows 侧认进程靠端口，不靠命令行里的串**：`start`/`stop`/`status` 用 `netstat -ano` 取 8320 的属主 PID，再用 `tasklist` 核对镜像名是不是 `java.exe`；不是它就 `[REFUSED]` 什么都不杀。端口与全部路径只写在 `dev\bin\_env.bat` 一处。java 命令行里仍保留 `preflight-server`（日志与排查要看），但脚本不再拿它当匹配依据——按名字匹配认不出是哪一台 java。
+- **这台机器的批处理起不了 powershell**：`powershell.exe` 在 `.bat` 上下文里被拒（rc=5「拒绝访问」），PATH 名与全路径一样。所以隐藏启动走 `cscript` + `dev\bin\run-hidden.vbs`。换机器时若 cscript 也被拦，`start.bat` 会明说并回落成一个**最小化窗口**（任务栏会留着），而不是假装成功。
